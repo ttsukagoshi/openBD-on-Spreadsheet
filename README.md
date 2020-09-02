@@ -1,4 +1,4 @@
-# openBD-on-Spreadsheet
+# openBD情報チェッカー
 [openBD](https://openbd.jp/)にある情報をGoogleスプレッドシート上で確認するツール
 
 # 使用方法

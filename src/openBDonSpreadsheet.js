@@ -19,12 +19,15 @@
 // LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 // OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
 // SOFTWARE.
+// 
+// See https://github.com/ttsukagoshi/openBD-on-Spreadsheet for latest information.
 
 // Global variables
 const OPENBD_API_VERSION = 'v1'; // openBDのAPIバージョン。 https://openbd.jp/
-const ISBN_CELL = { 'row': 8, 'column': 3 }; // ISBNを入力するセルの場所（行＆列番号）。例）{'row': 7, 'column': 3}＝セル「C7」
+const ISBN_CELL = { 'row': 8, 'column': 3 }; // ISBNを入力するセルの場所（行＆列番号）。例）{'row': 8, 'column': 3}＝セル「C8」
 const DATA_CELL_START = { 'row': 14, 'column': 4 }; // 書籍データを入力するセル範囲の起点（行＆列番号）。
 const REPORTING_DATE_CELL = { 'row': 12, 'column': 6 }; // データ取得時点を入力するセルの場所（行＆列番号）。
+
 /**
  * onOpen()
  * Add menu to spreadsheet
@@ -36,13 +39,16 @@ function onOpen() {
     .addToUi();
 }
 
-
+/**
+ * スプレッドシートの所定セルに入力したISBNコードをもとに、openBDの情報を参照する。
+ */
 function lookupOpenBD() {
   var ui = SpreadsheetApp.getUi();
   var currentSheet = SpreadsheetApp.getActiveSpreadsheet().getActiveSheet();
   var isbn = currentSheet.getRange(ISBN_CELL.row, ISBN_CELL.column).getValue();
   var isbnArray = isbn.split(',');
-  var url = `https://api.openbd.jp/${OPENBD_API_VERSION}/get?isbn=${encodeURIComponent(isbn)}`;
+  var baseUrl = `https://api.openbd.jp/${OPENBD_API_VERSION}/get`;
+  var url = baseUrl + `?isbn=${encodeURIComponent(isbn)}`;
   var now = Utilities.formatDate(new Date(), SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone(), 'yyyy-MM-dd HH:mm:ss Z');
   try {
     // openBDのAPIを叩く
@@ -62,7 +68,7 @@ function lookupOpenBD() {
         'pubdate': element.summary.pubdate || 'NA',
         'coverUrl': element.summary.cover || 'NA',
         'coverImage': (element.summary.cover ? `=image("${element.summary.cover}")` : 'NA'),
-        'openBDUrl': `https://api.openbd.jp/${OPENBD_API_VERSION}/get?isbn=${encodeURIComponent(isbnArray[index])}`
+        'openBDUrl': baseUrl + `?isbn=${encodeURIComponent(isbnArray[index])}`
       };
       return bookSummary;
     });
