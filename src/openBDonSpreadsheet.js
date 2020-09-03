@@ -73,7 +73,7 @@ function lookupOpenBD() {
         'pubdate': element.summary.pubdate || 'NA',
         'coverUrl': element.summary.cover || 'NA',
         'coverImage': (element.summary.cover ? `=image("${element.summary.cover}")` : 'NA'),
-        'openBDUrl': (element.summary.cover ? baseUrl + `?isbn=${encodeURIComponent(isbnArray[index])}` : 'NA')
+        'openBDUrl': (element.summary.isbn ? baseUrl + `?isbn=${encodeURIComponent(isbnArray[index])}` : 'NA')
       };
       return bookSummary;
     });
