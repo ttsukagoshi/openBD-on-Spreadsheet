@@ -51,13 +51,18 @@ function lookupOpenBD() {
   var url = baseUrl + `?isbn=${encodeURIComponent(isbn)}`;
   var now = Utilities.formatDate(new Date(), SpreadsheetApp.getActiveSpreadsheet().getSpreadsheetTimeZone(), 'yyyy-MM-dd HH:mm:ss Z');
   try {
+    // 既存の情報を削除する
+    currentSheet
+      .getRange(DATA_CELL_START.row, DATA_CELL_START.column, currentSheet.getLastRow() - DATA_CELL_START.row + 1, currentSheet.getLastColumn() - DATA_CELL_START.column + 1)
+      .clear({ contentsOnly: true });
     // openBDのAPIを叩く
-   let responses = JSON.parse(UrlFetchApp.fetch(url).getContentText());
+    let responses = JSON.parse(UrlFetchApp.fetch(url).getContentText());
     if (!responses.length || !responses[0]) {
       throw new Error('該当する書籍が見つかりません。')
     }
     // 必要な情報の抽出
-    let bookInfos = responses.map((element,index) => {
+    let bookInfos = responses.map((element, index) => {
+      element = element || {'summary': {}};
       let bookSummary = {
         'isbn': element.summary.isbn || 'NA',
         'title': element.summary.title || 'NA',
@@ -68,7 +73,7 @@ function lookupOpenBD() {
         'pubdate': element.summary.pubdate || 'NA',
         'coverUrl': element.summary.cover || 'NA',
         'coverImage': (element.summary.cover ? `=image("${element.summary.cover}")` : 'NA'),
-        'openBDUrl': baseUrl + `?isbn=${encodeURIComponent(isbnArray[index])}`
+        'openBDUrl': (element.summary.cover ? baseUrl + `?isbn=${encodeURIComponent(isbnArray[index])}` : 'NA')
       };
       return bookSummary;
     });
@@ -96,7 +101,7 @@ function lookupOpenBD() {
       coverImages.push(book.coverImage);
       openBDUrls.push(book.openBDUrl);
     }
-    let recordArray = [isbns, titles, volumes, seriesArr, authors, publishers, pubdates, coverImages, coverUrls,openBDUrls];
+    let recordArray = [isbns, titles, volumes, seriesArr, authors, publishers, pubdates, coverImages, coverUrls, openBDUrls];
     // Spreadsheetへの転記
     currentSheet.getRange(DATA_CELL_START.row, DATA_CELL_START.column, recordArray.length, recordArray[0].length)
       .setValues(recordArray);
