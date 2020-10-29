@@ -1,3 +1,7 @@
+<blockquote>
+openBDを使用した確認ツールは<a href="https://github.com/ttsukagoshi/chrome-ext_openBD-checker">こちらのGoogle Chrome拡張機能</a>に引き継ぎました。<strong>本ツールは更新されません。</strong>
+</blockquote>
+
 # openBD情報チェッカー
 [openBD](https://openbd.jp/)にある情報をGoogleスプレッドシート上で確認するツール
 
